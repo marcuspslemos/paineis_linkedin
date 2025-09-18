@@ -27,7 +27,7 @@ col2.metric("Crescimento Previsto 2025", "+15%")
 # ----------------------------
 # Gráfico
 # ----------------------------
-fig, ax = plt.subplots(figsize=(6,3)
+fig, ax = plt.subplots(figsize=(6,3))
 
 # Linha de vendas reais
 ax.plot(meses_2024, vendas_2024, marker="o", color="blue", label="Vendas 2024")
