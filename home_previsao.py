@@ -1,48 +1,65 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
+import numpy as np
 
-# ---- Título ----
-st.title("📊 Dashboard de Predição de Vendas")
+# ----------------------------
+# Simulação de dados
+# ----------------------------
+meses_2024 = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"]
+vendas_2024 = [50, 55, 60, 58, 65, 70]
 
-# ---- Dados simulados ----
-meses = np.arange(1, 13)
-vendas = np.array([100, 120, 140, 160, 200, 220, 250, 280, 300, 330, 370, 400])
+# Previsão para 2025 (simples extrapolação)
+meses_2025 = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"]
+vendas_previstas = [60, 63, 67, 72, 76, 80]
 
-df = pd.DataFrame({"Mês": meses, "Vendas": vendas})
+# ----------------------------
+# Layout do Dashboard
+# ----------------------------
+st.title("📊 Dashboard de Vendas Preditivo")
+st.write("Exemplo conceitual de como unir dados reais e previsões em um painel único.")
 
-# ---- Modelo preditivo (Regressão Linear) ----
-X = df[["Mês"]]
-y = df["Vendas"]
+# KPIs
+col1, col2 = st.columns(2)
+col1.metric("Total de Vendas 2024", f"{sum(vendas_2024)} unidades")
+col2.metric("Crescimento Previsto 2025", "+15%")
 
-modelo = LinearRegression()
-modelo.fit(X, y)
-
-# Previsão para próximos 3 meses
-meses_futuros = np.arange(13, 16).reshape(-1, 1)
-previsao = modelo.predict(meses_futuros)
-
-df_pred = pd.DataFrame({
-    "Mês": meses_futuros.flatten(),
-    "Vendas Previstas": previsao
-})
-
-# ---- Gráfico ----
+# ----------------------------
+# Gráfico
+# ----------------------------
 fig, ax = plt.subplots()
-ax.plot(df["Mês"], df["Vendas"], marker="o", label="Histórico de Vendas")
-ax.plot(df_pred["Mês"], df_pred["Vendas Previstas"], marker="x", linestyle="--", color="green", label="Previsão")
-ax.set_xlabel("Mês")
-ax.set_ylabel("Vendas")
+
+# Linha de vendas reais
+ax.plot(meses_2024, vendas_2024, marker="o", color="blue", label="Vendas 2024")
+
+# Linha de previsão
+ax.plot(meses_2025, vendas_previstas, marker="o", linestyle="--", color="green", label="Previsão 2025")
+
+ax.set_title("Evolução e Previsão de Vendas")
+ax.set_ylabel("Unidades vendidas")
 ax.legend()
+
 st.pyplot(fig)
 
-# ---- KPIs ----
-col1, col2 = st.columns(2)
-col1.metric("Crescimento Previsto", f"+{round(((previsao[-1] - vendas[-1]) / vendas[-1]) * 100, 2)}%")
-col2.metric("Vendas em 15º mês", f"{int(previsao[-1])}")
+# ----------------------------
+# Seleção de período (conceitual)
+# ----------------------------
+periodo = st.selectbox("Selecione o período:", ["1º semestre", "Ano inteiro"])
+st.write(f"📌 Exibindo dados para: **{periodo}**")
 
-# ---- Seleção de período ----
-periodo = st.slider("Selecione o período de meses:", 1, 15, (1, 12))
-st.write("Período selecionado:", periodo)
+# ----------------------------
+# Botão de exportação
+# ----------------------------
+df = pd.DataFrame({
+    "Meses_2024": meses_2024,
+    "Vendas_2024": vendas_2024,
+    "Meses_2025": meses_2025,
+    "Previsão_2025": vendas_previstas
+})
+
+st.download_button(
+    "📥 Baixar Relatório (CSV)",
+    df.to_csv(index=False).encode("utf-8"),
+    "relatorio_vendas.csv",
+    "text/csv"
+)
